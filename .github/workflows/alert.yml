@@ -1,0 +1,25 @@
+name: DefiLlama Solana Alert
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # 毎時0分 → TVLチェック
+    - cron: '0 0 * * *'   # 毎日0時(UTC) → Feeチェック
+  workflow_dispatch:
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run alert
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: python alert.py
